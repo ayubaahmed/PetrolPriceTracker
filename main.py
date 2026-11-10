@@ -14,6 +14,7 @@ logging.basicConfig(
 )
 
 
+
 def get_html(url):
     try:
         logging.info(f"Getting html from {url}")
@@ -39,30 +40,10 @@ def parse_html(html):
             return None
         soup = BeautifulSoup(
             html, 'html.parser')
-        section = soup.find("section", class_="mb-8")
-
-        if not section:
-            logging.error("No section found")
-            return None
-        avg_prices = section.find(
-            "div", class_='grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4')
-        if not avg_prices:
-            logging.error("No prices found")
-            return None
-
-        petrol_avg = avg_prices.find(
-            "div", class_='stat-card')
-
-        if not petrol_avg:
-            logging.error("No petrol avg found")
-            return None
-
-        price = petrol_avg.find(
-            "div", class_= 'figure figure-petrol')
-
-        if not price:
-            logging.error("No petrol price  found")
-            return None
+        extract = soup.select_one(".figure-petrol")
+        if extract is None:
+            logging.error("No petrol found")
+        price = extract.get_text(strip=True)
         logging.info(f"Price of petrol is: {price}")
 
         return price
